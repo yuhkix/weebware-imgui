@@ -14,7 +14,7 @@ current progress which i will try to update every once in a while:
 
 - [x] setup the project
 - [x] file orientation
-- [ ] custom controls with animations
+- [ ] custom controls with animations (wip)
 - [x] icons
 - [ ] menu animations
 - [ ] review code and clean up
