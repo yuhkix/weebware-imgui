@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="controls\animator.h" />
     <ClInclude Include="controls\controls.h">
       <DeploymentContent>true</DeploymentContent>
     </ClInclude>

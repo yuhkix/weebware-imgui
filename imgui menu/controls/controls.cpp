@@ -1,7 +1,5 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "controls.h"
-#include <map>
-#include <unordered_map>
 
 bool c::tabbutton(const char* label, const ImVec2& size_arg)
 {
@@ -53,11 +51,11 @@ bool c::tabbutton(const char* label, const ImVec2& size_arg)
         active_anim.insert({ id, 0.f });
         this_act = active_anim.find(id);
     }
-    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 5.f * (currentTab->second || hovered ? 1.f : -1.f), 0.f, 1.0f);
+    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 4.f * (currentTab->second || hovered ? 1.f : -1.f), 0.f, 1.0f);
 
     ImColor textColorTransition = ImLerp(idleText, hoverText, this_act->second);
 
-    drawlist->AddRectFilled(bb.Min, bb.Max, color, 2.0f);
+    drawlist->AddRectFilled(bb.Min, bb.Max, color, 3.0f);
     drawlist->AddText(ImVec2(pos.x + (size.x / 2) - label_size.x * 0.5f, pos.y + (size.y / 2) - label_size.y * 0.5f), textColorTransition, label);
 
     return currentTab->second;
@@ -93,10 +91,10 @@ bool c::button(const char* label, const ImVec2& size_arg)
         active_anim.insert({ id, 0.f });
         this_act = active_anim.find(id);
     }
-    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 5.f * (pressed || hovered ? 1.f : -1.f), 0.f, 1.0f);
+    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 4.f * (pressed || hovered ? 1.f : -1.f), 0.f, 1.0f);
     ImColor textColorTransition = ImLerp(idleText, hoverText, this_act->second);
 
-    drawlist->AddRectFilled(bb.Min, bb.Max, textColorTransition, 2.0f);
+    drawlist->AddRectFilled(bb.Min, bb.Max, textColorTransition, 3.0f);
     drawlist->AddText(ImVec2(pos.x + (size.x / 2) - label_size.x * 0.5f, pos.y + (size.y / 2) - label_size.y * 0.5f), ImColor(203, 119, 180, 255), label);
 
     return pressed;
@@ -108,71 +106,34 @@ bool c::checkbox(const char* label, bool* v)
     if (window->SkipItems)
         return false;
 
-    ImGuiContext& g = *GImGui;
-    const ImGuiStyle& style = g.Style;
     const ImGuiID id = window->GetID(label);
-    const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
+    const ImRect bb = ImRect(window->DC.CursorPos, window->DC.CursorPos + ImVec2(20, 20));
 
-    const float square_sz = ImGui::GetFrameHeight();
-    const ImVec2 pos = window->DC.CursorPos;
-    const ImRect total_bb(pos, pos + ImVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y * 2.0f));
-    ImGui::ItemSize(total_bb, style.FramePadding.y);
-    if (!ImGui::ItemAdd(total_bb, id))
-    {
-        IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (*v ? ImGuiItemStatusFlags_Checked : 0));
+    ImGui::ItemSize(bb);
+    if (!ImGui::ItemAdd(bb, id))
         return false;
-    }
 
     bool hovered, held;
-    bool pressed = ImGui::ButtonBehavior(total_bb, id, &hovered, &held);
+    bool pressed = ImGui::ButtonBehavior(bb, id, &hovered, &held);
+
     if (pressed)
-    {
         *v = !(*v);
-        ImGui::MarkItemEdited(id);
-    }
 
-    const ImRect check_bb(pos, pos + ImVec2(square_sz, square_sz));
-    ImGui::RenderNavHighlight(total_bb, id);
-    //ImGui::RenderFrame(check_bb.Min, check_bb.Max, ImGui::GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg), true, style.FrameRounding);
+    static Animator pressAnim(0.f, 3.f, v, 8.f);
+    float pressValue = pressAnim.Update(id);
 
-    ImVec4 idleColor = ImColor(30, 30, 30, 255);
-    ImVec4 hoverColor = ImColor(151, 89, 134, 255);
-    ImVec4 activeColor = ImColor(203, 119, 180, 255);
-    static std::map<ImGuiID, float> active_anim;
-    auto this_act = active_anim.find(id);
-    if (this_act == active_anim.end())
+    static Animator hoverAnim(20.f, 0.f, &hovered, 4.f);
+    float hoverValue = hoverAnim.Update(id);
+    window->DrawList->AddRectFilled(bb.Min + ImVec2(0, hoverValue), bb.Max, ImColor(30, 30, 30), 0.f);
+
+
+    if (*v || pressValue != 0.f)
     {
-        active_anim.insert({ id, 0.f });
-        this_act = active_anim.find(id);
-    }
-    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 5.f * (hovered ? 1.f : -1.f), 0.f, 1.0f);
-
-    ImColor textColorTransition = ImLerp(idleColor, hoverColor, this_act->second);
-
-    window->DrawList->AddRectFilled(check_bb.Min, check_bb.Max, textColorTransition, 5.0f);
-
-
-    ImU32 check_col = ImColor(255, 255, 255, 255);
-    bool mixed_value = (g.LastItemData.InFlags & ImGuiItemFlags_MixedValue) != 0;
-    if (mixed_value)
-    {
-        ImVec2 pad(ImMax(1.0f, IM_FLOOR(square_sz / 3.6f)), ImMax(1.0f, IM_FLOOR(square_sz / 3.6f)));
-        window->DrawList->AddRectFilled(check_bb.Min + pad, check_bb.Max - pad, check_col, style.FrameRounding);
-    }
-    else if (*v)
-    {
-        const float pad = ImMax(1.0f, IM_FLOOR(square_sz / 6.0f));
-        ImGui::RenderCheckMark(window->DrawList, check_bb.Min + ImVec2(pad, pad), check_col, square_sz - pad * 2.0f);
+        window->DrawList->AddRectFilled(bb.Min + ImVec2(pressValue, pressValue), bb.Max - ImVec2(pressValue, pressValue), ImColor(203, 119, 180), 0.f);
     }
 
-    ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
-    if (g.LogEnabled)
-        ImGui::LogRenderedText(&label_pos, mixed_value ? "[~]" : *v ? "[x]" : "[ ]");
-    if (label_size.x > 0.0f)
-        ImGui::RenderText(label_pos, label);
-
-    IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (*v ? ImGuiItemStatusFlags_Checked : 0));
-    return pressed;
+    window->DrawList->AddRect(bb.Min, bb.Max, ImColor(30, 30, 30), 0.f);
+    return true;
 }
 
 void c::groupbox(const char* title, ImVec2 size)
@@ -227,7 +188,9 @@ bool c::begintab(const char* unique_id, Icons icon, ImFont* font)
 
     ImVec4 hoverText = ImColor(203, 119, 180, 255);
     ImVec4 idleText = ImColor(70, 70, 70, 255);
+    ImVec4 LineIdle = ImColor(20, 20, 20, 255);
 
+    //tab icon fade anim
     static std::map<ImGuiID, float> active_anim;
     auto this_act = active_anim.find(id);
     if (this_act == active_anim.end())
@@ -235,15 +198,28 @@ bool c::begintab(const char* unique_id, Icons icon, ImFont* font)
         active_anim.insert({ id, 0.f });
         this_act = active_anim.find(id);
     }
-    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 5.f * (hovered ? 1.f : -1.f), 0.f, 1.0f);
+    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 4.f * (currentTab->second || hovered ? 1.f : -1.f), 0.f, 1.0f);
+
+    //line fade anim
+    static std::map<ImGuiID, float> new_anim;
+    auto new_act = new_anim.find(id);
+    if (new_act == new_anim.end())
+    {
+        new_anim.insert({ id, 0.f });
+        new_act = new_anim.find(id);
+    }
+    new_act->second = ImClamp(new_act->second + g.IO.DeltaTime * 4.f * (currentTab->second ? 1.f : -1.f), 0.f, 1.0f);
 
     ImColor textColorTransition = ImLerp(idleText, hoverText, this_act->second);
+    ImColor lineColorTransition = ImLerp(LineIdle, hoverText, new_act->second);
 
-    window->DrawList->AddText(font, 35.f, pos, currentTab->second ? ImColor(203.f / 255.f, 119.f / 255.f, 180.f / 255.f) : textColorTransition , GetIconString(icon));
-    if (currentTab->second)
-    {
-        window->DrawList->AddLine(ImVec2(window->Pos.x + 58, pos.y + 5), ImVec2(window->Pos.x + 58, pos.y + icon_size.y + 5), ImColor(203, 119, 180, 255), 2.0F);
-    }
+    window->DrawList->AddText(font, 35.f, pos, textColorTransition , GetIconString(icon));
+    window->DrawList->AddLine(ImVec2(window->Pos.x + 58, pos.y + 5), ImVec2(window->Pos.x + 58, pos.y + icon_size.y + 5), lineColorTransition, 2.0F);
 
     return currentTab->second;
+}
+
+bool c::slider(const char* label, int* v, int v_min, int v_max)
+{
+
 }

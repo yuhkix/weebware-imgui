@@ -1,7 +1,7 @@
-#include "../imgui/imgui.h"
-#include "../imgui/imgui_internal.h"
+#include "animator.h"
 #include "../imgui/imgui_impl_dx9.h"
 #include "../imgui/imgui_impl_win32.h"
+#include <map>
 #include <d3d9.h>
 #include <tchar.h>
 
@@ -23,6 +23,7 @@ public:
     static void groupbox(const char* title, ImVec2 size);
     static void endgroupbox();
     static bool begintab(const char* unique_id, Icons Icon, ImFont* font);
+    static bool slider(const char* label, int *v, int v_min, int v_max);
 
     static const char* GetIconString(Icons icons)
     {

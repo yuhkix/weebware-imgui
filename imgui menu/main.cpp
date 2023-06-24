@@ -91,9 +91,6 @@ int main(int, char**)
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
         {
-            util::fadeinAlpha = clip(util::fadeinAlpha + util::frequency * g.IO.DeltaTime, 0.f, 1.f);
-            util::fadeoutAlpha = clip(util::fadeoutAlpha + util::frequency * g.IO.DeltaTime, 1.f, 0.f);
-            g.Style.Alpha = util::isOpen ? util::fadeinAlpha : util::fadeoutAlpha;
             if (util::isOpen)
                 menu::rendermenu();
         }

@@ -10,7 +10,5 @@ public:
     inline static ImFont* TabIconFont;
     inline static ImFont* LogoIconFont;
     inline static bool isOpen = true;
-    static constexpr auto frequency = 1 / 0.5f;
-    inline static float fadeinAlpha;
-    inline static float fadeoutAlpha;
+    inline static bool checkTest = false;
 };

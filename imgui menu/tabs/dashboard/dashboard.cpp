@@ -17,6 +17,8 @@ void dashboard::renderdashboard()
             ImGui::SetCursorPosX(10);
             ImGui::PushFont(util::segoeuiSemibold);
             c::button("Button");
+            ImGui::SetCursorPosX(10);
+            c::checkbox("Checkbox", &util::checkTest);
             ImGui::PopFont();
         }
         c::endgroupbox();

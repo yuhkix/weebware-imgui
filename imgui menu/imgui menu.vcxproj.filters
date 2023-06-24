@@ -90,6 +90,9 @@
     <ClInclude Include="font\Icons.h">
       <Filter>font</Filter>
     </ClInclude>
+    <ClInclude Include="controls\animator.h">
+      <Filter>controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui.cpp">
