@@ -1,5 +1,7 @@
 ### weebware imgui
 
+credits: [SorryX](https://github.com/SorryX)
+
 a personal project i wanted to work on to learn more about imgui and a bit of c++
 
 ---
