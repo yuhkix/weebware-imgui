@@ -1,5 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "controls.h"
+#include "../utilities.h"
 
 bool c::tabbutton(const char* label, const ImVec2& size_arg)
 {
@@ -23,8 +24,6 @@ bool c::tabbutton(const char* label, const ImVec2& size_arg)
     bool pressed = ImGui::ButtonBehavior(bb, id, &hovered, &held);
 
     ImDrawList* drawlist = ImGui::GetWindowDrawList();
-    ImColor color = (hovered && held) ? ImColor(30, 30, 30, 255) : hovered ? ImColor(30, 30, 30, 255) : ImColor(30, 30, 30, 255);
-    ImColor textColor = (hovered && held) ? ImColor(54, 54, 54, 255) : hovered ? ImColor(54, 54, 54, 255) : ImColor(203, 119, 180, 255);
 
     static std::unordered_map<ImGuiID, bool> Tabs;
     auto currentTab = Tabs.find(id);
@@ -41,28 +40,19 @@ bool c::tabbutton(const char* label, const ImVec2& size_arg)
             tab.first != currentTab->first ? tab.second = false : tab.second = true;
     }
 
-    ImVec4 hoverText = ImColor(203, 119, 180, 255);
-    ImVec4 idleText = ImColor(54, 54, 54, 255);
+    bool textcons = currentTab->second || hovered;
+    static Animator<ImColor> textAnim(ImColor(54, 54, 54), ImColor(203, 119, 180), 4.f);
+    ImColor textColor = textAnim.Update(id, &textcons);
 
-    static std::map<ImGuiID, float> active_anim;
-    auto this_act = active_anim.find(id);
-    if (this_act == active_anim.end())
-    {
-        active_anim.insert({ id, 0.f });
-        this_act = active_anim.find(id);
-    }
-    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 4.f * (currentTab->second || hovered ? 1.f : -1.f), 0.f, 1.0f);
-
-    ImColor textColorTransition = ImLerp(idleText, hoverText, this_act->second);
-
-    drawlist->AddRectFilled(bb.Min, bb.Max, color, 3.0f);
-    drawlist->AddText(ImVec2(pos.x + (size.x / 2) - label_size.x * 0.5f, pos.y + (size.y / 2) - label_size.y * 0.5f), textColorTransition, label);
+    drawlist->AddRectFilled(bb.Min, bb.Max, ImColor(30, 30, 30), 3.0f);
+    drawlist->AddText(ImVec2(pos.x + (size.x / 2) - label_size.x * 0.5f, pos.y + (size.y / 2) - label_size.y * 0.5f), textColor, label);
 
     return currentTab->second;
 }
 
 bool c::button(const char* label, const ImVec2& size_arg)
 {
+    ImGui::SetCursorPosX(10);
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
@@ -82,19 +72,11 @@ bool c::button(const char* label, const ImVec2& size_arg)
     bool hovered, held;
     bool pressed = ImGui::ButtonBehavior(bb, id, &hovered, &held);
     ImDrawList* drawlist = ImGui::GetWindowDrawList();
-    ImVec4 hoverText = ImColor(25, 25, 25, 255);
-    ImVec4 idleText = ImColor(30, 30, 30, 255);
-    static std::map<ImGuiID, float> active_anim;
-    auto this_act = active_anim.find(id);
-    if (this_act == active_anim.end())
-    {
-        active_anim.insert({ id, 0.f });
-        this_act = active_anim.find(id);
-    }
-    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 4.f * (pressed || hovered ? 1.f : -1.f), 0.f, 1.0f);
-    ImColor textColorTransition = ImLerp(idleText, hoverText, this_act->second);
+    
+    static Animator<ImColor> hoverAnim(ImColor(30, 30, 30), ImColor(25, 25, 25), 4.f);
+    ImColor hoverColor = hoverAnim.Update(id, &hovered);
 
-    drawlist->AddRectFilled(bb.Min, bb.Max, textColorTransition, 3.0f);
+    drawlist->AddRectFilled(bb.Min, bb.Max, hoverColor, 3.0f);
     drawlist->AddText(ImVec2(pos.x + (size.x / 2) - label_size.x * 0.5f, pos.y + (size.y / 2) - label_size.y * 0.5f), ImColor(203, 119, 180, 255), label);
 
     return pressed;
@@ -102,6 +84,7 @@ bool c::button(const char* label, const ImVec2& size_arg)
 
 bool c::checkbox(const char* label, bool* v)
 {
+    ImGui::SetCursorPosX(10);
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
@@ -119,13 +102,13 @@ bool c::checkbox(const char* label, bool* v)
     if (pressed)
         *v = !(*v);
 
-    static Animator pressAnim(0.f, 3.f, v, 8.f);
-    float pressValue = pressAnim.Update(id);
+    static Animator<float> pressAnimator(0.f, 3.f, 8.f);
+    float pressValue = pressAnimator.Update(id, v);
 
-    static Animator hoverAnim(20.f, 0.f, &hovered, 4.f);
-    float hoverValue = hoverAnim.Update(id);
+    static Animator<float> hoverAnimator(20.f, 0.f, 4.f);
+    float hoverValue = hoverAnimator.Update(id, &hovered);
+
     window->DrawList->AddRectFilled(bb.Min + ImVec2(0, hoverValue), bb.Max, ImColor(30, 30, 30), 0.f);
-
 
     if (*v || pressValue != 0.f)
     {
@@ -133,6 +116,8 @@ bool c::checkbox(const char* label, bool* v)
     }
 
     window->DrawList->AddRect(bb.Min, bb.Max, ImColor(30, 30, 30), 0.f);
+
+
     return true;
 }
 
@@ -145,6 +130,11 @@ void c::groupbox(const char* title, ImVec2 size)
     ImRect bb = ImRect(pos, pos + size);
 
     ImGui::BeginChild(title, size);
+    ImGui::SetCursorPos(ImVec2(10, 5));
+    ImGui::PushFont(util::groupboxTitle);
+    ImGui::TextColored(ImColor(203, 119, 180), title);
+    ImGui::PopFont();
+
 }
 
 void c::endgroupbox()
@@ -186,35 +176,15 @@ bool c::begintab(const char* unique_id, Icons icon, ImFont* font)
             tab.first != currentTab->first ? tab.second = false : tab.second = true;
     }
 
-    ImVec4 hoverText = ImColor(203, 119, 180, 255);
-    ImVec4 idleText = ImColor(70, 70, 70, 255);
-    ImVec4 LineIdle = ImColor(20, 20, 20, 255);
+    bool iconcons = currentTab->second || hovered;
+    static Animator<ImColor> iconAnim(ImColor(70, 70, 70), ImColor(203, 119, 180), 4.f);
+    ImColor iconColor = iconAnim.Update(id, &iconcons);
 
-    //tab icon fade anim
-    static std::map<ImGuiID, float> active_anim;
-    auto this_act = active_anim.find(id);
-    if (this_act == active_anim.end())
-    {
-        active_anim.insert({ id, 0.f });
-        this_act = active_anim.find(id);
-    }
-    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 4.f * (currentTab->second || hovered ? 1.f : -1.f), 0.f, 1.0f);
+    static Animator<ImColor> lineAnim(ImColor(20, 20, 20), ImColor(203, 119, 180), 4.f);
+    ImColor lineColor = lineAnim.Update(id, &currentTab->second);
 
-    //line fade anim
-    static std::map<ImGuiID, float> new_anim;
-    auto new_act = new_anim.find(id);
-    if (new_act == new_anim.end())
-    {
-        new_anim.insert({ id, 0.f });
-        new_act = new_anim.find(id);
-    }
-    new_act->second = ImClamp(new_act->second + g.IO.DeltaTime * 4.f * (currentTab->second ? 1.f : -1.f), 0.f, 1.0f);
-
-    ImColor textColorTransition = ImLerp(idleText, hoverText, this_act->second);
-    ImColor lineColorTransition = ImLerp(LineIdle, hoverText, new_act->second);
-
-    window->DrawList->AddText(font, 35.f, pos, textColorTransition , GetIconString(icon));
-    window->DrawList->AddLine(ImVec2(window->Pos.x + 58, pos.y + 5), ImVec2(window->Pos.x + 58, pos.y + icon_size.y + 5), lineColorTransition, 2.0F);
+    window->DrawList->AddText(font, 35.f, pos, iconColor, GetIconString(icon));
+    window->DrawList->AddLine(ImVec2(window->Pos.x + 58, pos.y + 5), ImVec2(window->Pos.x + 58, pos.y + icon_size.y + 5), lineColor, 2.0F);
 
     return currentTab->second;
 }
