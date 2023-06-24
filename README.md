@@ -6,7 +6,9 @@ a personal project i wanted to work on to learn more about imgui and a bit of c+
 
 current progress which i will try to update every once in a while:
 
-![menu](menu_preview.mp4)
+https://github.com/yuhkix/weebware-imgui/assets/74727805/0b4bef8c-8c3d-4755-8b50-6019a2564997
+
+
 
 ---
 
