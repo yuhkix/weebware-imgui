@@ -17,7 +17,8 @@ public:
         DASHBOARD,
         SEARCH
     };
-    static bool button(const char* label, ImVec2 size);
+    static bool tabbutton(const char* label, const ImVec2& size_arg = ImVec2(0,0));
+    static bool button(const char* label, const ImVec2& size_arg = ImVec2(0, 0));
     static bool checkbox(const char* label, bool* v);
     static void groupbox(const char* title, ImVec2 size);
     static void endgroupbox();

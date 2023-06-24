@@ -5,7 +5,7 @@
 void dashboard::renderdashboard()
 {
     ImGui::SetCursorPos(ImVec2(75, 10));
-    if (c::button("Helpers", ImVec2(55, 25)))
+    if (c::tabbutton("Helpers", ImVec2(55, 25)))
     {
         ImGui::SetCursorPos(ImVec2(65, 50));
         c::groupbox("General", ImVec2(285, 225));
@@ -13,6 +13,10 @@ void dashboard::renderdashboard()
             ImGui::SetCursorPos(ImVec2(10, 5));
             ImGui::PushFont(util::groupboxTitle);
             ImGui::TextColored(ImColor(203, 119, 180, 255), "GENERAL");
+            ImGui::PopFont();
+            ImGui::SetCursorPosX(10);
+            ImGui::PushFont(util::segoeuiSemibold);
+            c::button("Button");
             ImGui::PopFont();
         }
         c::endgroupbox();
@@ -27,5 +31,5 @@ void dashboard::renderdashboard()
         c::endgroupbox();
     }
     ImGui::SetCursorPos(ImVec2(140, 10));
-    c::button("Movement", ImVec2(80, 25));
+    c::tabbutton("Movement", ImVec2(80, 25));
 }

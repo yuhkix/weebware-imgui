@@ -3,19 +3,21 @@
 #include <map>
 #include <unordered_map>
 
-bool c::button(const char* label, ImVec2 size)
+bool c::tabbutton(const char* label, const ImVec2& size_arg)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
 
     ImGuiContext& g = *GImGui;
+    const ImGuiStyle& style = g.Style;
     ImGuiID id = window->GetID(label);
     ImVec2 label_size = ImGui::CalcTextSize(label);
+    ImVec2 size = ImGui::CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
     ImVec2 pos = window->DC.CursorPos;
     ImRect bb = ImRect(pos, pos + size);
 
-    ImGui::ItemSize(bb);
+    ImGui::ItemSize(size, style.FramePadding.y);
     if (!ImGui::ItemAdd(bb, id))
         return false;
 
@@ -59,6 +61,45 @@ bool c::button(const char* label, ImVec2 size)
     drawlist->AddText(ImVec2(pos.x + (size.x / 2) - label_size.x * 0.5f, pos.y + (size.y / 2) - label_size.y * 0.5f), textColorTransition, label);
 
     return currentTab->second;
+}
+
+bool c::button(const char* label, const ImVec2& size_arg)
+{
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
+
+    ImGuiContext& g = *GImGui;
+    const ImGuiStyle& style = g.Style;
+    ImGuiID id = window->GetID(label);
+    ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
+    ImVec2 size = ImGui::CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+    ImVec2 pos = window->DC.CursorPos;
+    ImRect bb = ImRect(pos, pos + size);
+
+    ImGui::ItemSize(size, style.FramePadding.y);
+    if (!ImGui::ItemAdd(bb, id))
+        return false;
+
+    bool hovered, held;
+    bool pressed = ImGui::ButtonBehavior(bb, id, &hovered, &held);
+    ImDrawList* drawlist = ImGui::GetWindowDrawList();
+    ImVec4 hoverText = ImColor(25, 25, 25, 255);
+    ImVec4 idleText = ImColor(30, 30, 30, 255);
+    static std::map<ImGuiID, float> active_anim;
+    auto this_act = active_anim.find(id);
+    if (this_act == active_anim.end())
+    {
+        active_anim.insert({ id, 0.f });
+        this_act = active_anim.find(id);
+    }
+    this_act->second = ImClamp(this_act->second + g.IO.DeltaTime * 5.f * (pressed || hovered ? 1.f : -1.f), 0.f, 1.0f);
+    ImColor textColorTransition = ImLerp(idleText, hoverText, this_act->second);
+
+    drawlist->AddRectFilled(bb.Min, bb.Max, textColorTransition, 2.0f);
+    drawlist->AddText(ImVec2(pos.x + (size.x / 2) - label_size.x * 0.5f, pos.y + (size.y / 2) - label_size.y * 0.5f), ImColor(203, 119, 180, 255), label);
+
+    return pressed;
 }
 
 bool c::checkbox(const char* label, bool* v)
