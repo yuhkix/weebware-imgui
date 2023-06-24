@@ -6,7 +6,7 @@ a personal project i wanted to work on to learn more about imgui and a bit of c+
 
 current progress which i will try to update every once in a while:
 
-![menu](current_menu.png)
+![menu](new_menu.png)
 
 ---
 
