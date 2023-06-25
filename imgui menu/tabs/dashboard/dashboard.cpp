@@ -4,7 +4,6 @@
 
 void dashboard::renderdashboard()
 {
-    static bool test = false;
     ImGui::SetCursorPos(ImVec2(75, 10));
     if (c::tabbutton("Helpers", ImVec2(55, 25)))
     {
@@ -25,5 +24,8 @@ void dashboard::renderdashboard()
         c::endgroupbox();
     }
     ImGui::SetCursorPos(ImVec2(140, 10));
-    c::tabbutton("Movement", ImVec2(80, 25));
+    if (c::tabbutton("Movement", ImVec2(80, 25)))
+    {
+
+    }
 }

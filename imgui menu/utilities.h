@@ -11,5 +11,4 @@ public:
     inline static ImFont* LogoIconFont;
     inline static bool isOpen = true;
     inline static bool checkTest = false;
-    inline static bool checkTest1 = false;
 };

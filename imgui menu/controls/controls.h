@@ -23,7 +23,7 @@ public:
     static void groupbox(const char* title, ImVec2 size);
     static void endgroupbox();
     static bool begintab(const char* unique_id, Icons Icon, ImFont* font);
-    static bool slider(const char* label, int *v, int v_min, int v_max);
+    static bool slider(const char* label, int* v, int v_min, int v_max, const char* format, ImGuiSliderFlags flags);
 
     static const char* GetIconString(Icons icons)
     {

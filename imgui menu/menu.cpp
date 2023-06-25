@@ -22,8 +22,8 @@ void menu::rendermenu()
         ImVec2 pos = ImGui::GetWindowPos();
 
         //rendering side and top bar
-        draw->AddRectFilled(ImVec2(pos.x, pos.y), ImVec2(pos.x + 60, pos.y + ImGui::GetWindowSize().y), ImColor(20.f / 255.f, 20.f / 255.f, 20.f / 255.f, g.Style.Alpha), 0.f);
-        draw->AddRectFilled(ImVec2(pos.x + 60, pos.y), ImVec2(pos.x + ImGui::GetWindowSize().x, pos.y + 45), ImColor(24.f / 255.f, 24.f / 255.f, 24.f / 255.f, g.Style.Alpha), 0.f);
+        draw->AddRectFilled(ImVec2(pos.x, pos.y), ImVec2(pos.x + 60, pos.y + ImGui::GetWindowSize().y), ImColor(20, 20, 20), 0.f);
+        draw->AddRectFilled(ImVec2(pos.x + 60, pos.y), ImVec2(pos.x + ImGui::GetWindowSize().x, pos.y + 45), ImColor(24, 24, 24), 0.f);
 
         //rendering logo
         #pragma region Logo

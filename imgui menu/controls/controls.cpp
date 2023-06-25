@@ -5,6 +5,7 @@
 #pragma region tab button
 bool c::tabbutton(const char* label, const ImVec2& size_arg)
 {
+
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
@@ -45,7 +46,7 @@ bool c::tabbutton(const char* label, const ImVec2& size_arg)
     static Animator<ImColor> textAnim(ImColor(54, 54, 54), ImColor(203, 119, 180), 4.f);
     ImColor textColor = textAnim.Update(id, &textcons);
 
-    drawlist->AddRectFilled(bb.Min, bb.Max, ImColor(30, 30, 30), 3.0f);
+    drawlist->AddRectFilled(bb.Min, bb.Max, ImColor(30, 30, 30), 2.0f);
     drawlist->AddText(ImVec2(pos.x + (size.x / 2) - label_size.x * 0.5f, pos.y + (size.y / 2) - label_size.y * 0.5f), textColor, label);
 
     return currentTab->second;
@@ -79,8 +80,8 @@ bool c::button(const char* label, const ImVec2& size_arg)
     static Animator<ImColor> hoverAnim(ImColor(30, 30, 30), ImColor(25, 25, 25), 4.f);
     ImColor hoverColor = hoverAnim.Update(id, &hovered);
 
-    drawlist->AddRectFilled(bb.Min, bb.Max, hoverColor, 3.0f);
-    drawlist->AddText(ImVec2(pos.x + (size.x / 2) - label_size.x * 0.5f, pos.y + (size.y / 2) - label_size.y * 0.5f), ImColor(203, 119, 180, 255), label);
+    drawlist->AddRectFilled(bb.Min, bb.Max, hoverColor, 2.0f);
+    drawlist->AddText(ImVec2(pos.x + (size.x / 2) - label_size.x * 0.5f, pos.y + (size.y / 2) - label_size.y * 0.5f), ImColor(203, 119, 180), label);
 
     return pressed;
 }
@@ -147,7 +148,6 @@ void c::groupbox(const char* title, ImVec2 size)
     ImVec2 label_size = ImGui::CalcTextSize(title);
     ImVec2 pos = window->DC.CursorPos;
     ImRect bb = ImRect(pos, pos + size);
-
     ImGui::BeginChild(title, size);
     ImGui::SetCursorPos(ImVec2(10, 5));
     ImGui::PushFont(util::groupboxTitle);
@@ -212,8 +212,8 @@ bool c::begintab(const char* unique_id, Icons icon, ImFont* font)
 #pragma endregion
 
 #pragma region slider
-bool c::slider(const char* label, int* v, int v_min, int v_max)
+bool c::slider(const char* label, int* v, int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
 {
-
+    return NULL;
 }
 #pragma endregion

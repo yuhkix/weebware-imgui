@@ -9,8 +9,7 @@ public:
     {
         this->startPoint = a; // the point A
         this->endPoint = b; // the point B
-        this->flAnimationSpeed = speed; // the speed this animation shall happen
-
+        this->flAnimationSpeed = speed; // the speed this animation should be running with
     }
 
     auto GetCurrentAnimation(ImGuiID id) noexcept
