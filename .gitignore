@@ -71,6 +71,9 @@ ScaffoldingReadMe.txt
 # StyleCop
 StyleCopReport.xml
 
+# Config file created by Dear ImGui
+*.ini
+
 # Files built by Visual Studio
 *_i.c
 *_p.c
