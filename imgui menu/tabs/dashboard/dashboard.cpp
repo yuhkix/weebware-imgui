@@ -20,11 +20,7 @@ void dashboard::renderdashboard()
         ImGui::SetCursorPos(ImVec2(359, 50));
         c::groupbox("INDICATORS", ImVec2(285, 225));
         {
-            ImGui::PushFont(util::segoeuiSemibold);
-            c::button("Button1");
-            c::checkbox("NiggerKiller", &util::checkTest1);
-            c::checkbox("hello", &test);
-            ImGui::PopFont();
+
         }
         c::endgroupbox();
     }

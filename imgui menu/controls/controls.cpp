@@ -89,8 +89,13 @@ bool c::checkbox(const char* label, bool* v)
     if (window->SkipItems)
         return false;
 
+    ImGuiContext& g = *GImGui;
+    const ImGuiStyle& style = g.Style;
     const ImGuiID id = window->GetID(label);
     const ImRect bb = ImRect(window->DC.CursorPos, window->DC.CursorPos + ImVec2(20, 20));
+    const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
+    const float square_sz = ImGui::GetFrameHeight();
+    const ImVec2 pos = window->DC.CursorPos;
 
     ImGui::ItemSize(bb);
     if (!ImGui::ItemAdd(bb, id))
@@ -115,6 +120,13 @@ bool c::checkbox(const char* label, bool* v)
         window->DrawList->AddRectFilled(bb.Min + ImVec2(pressValue, pressValue), bb.Max - ImVec2(pressValue, pressValue), ImColor(203, 119, 180), 0.f);
     }
 
+    static Animator<ImColor> textAnim(ImColor(54, 54, 54), ImColor(203, 119, 180), 4.f);
+    ImColor textColor = textAnim.Update(id, v);
+
+    const ImRect check_bb(pos, pos + ImVec2(square_sz, square_sz));
+    ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y - 1);
+    if (label_size.x > 0.0f)
+        window->DrawList->AddText(label_pos, textColor, label);
     window->DrawList->AddRect(bb.Min, bb.Max, ImColor(30, 30, 30), 0.f);
 
 
