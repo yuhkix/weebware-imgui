@@ -2,6 +2,7 @@
 #include "controls.h"
 #include "../utilities.h"
 
+#pragma region tab button
 bool c::tabbutton(const char* label, const ImVec2& size_arg)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -49,7 +50,9 @@ bool c::tabbutton(const char* label, const ImVec2& size_arg)
 
     return currentTab->second;
 }
+#pragma endregion
 
+#pragma region button
 bool c::button(const char* label, const ImVec2& size_arg)
 {
     ImGui::SetCursorPosX(10);
@@ -81,7 +84,9 @@ bool c::button(const char* label, const ImVec2& size_arg)
 
     return pressed;
 }
+#pragma endregion
 
+#pragma region checkbox
 bool c::checkbox(const char* label, bool* v)
 {
     ImGui::SetCursorPosX(10);
@@ -132,7 +137,9 @@ bool c::checkbox(const char* label, bool* v)
 
     return true;
 }
+#pragma endregion
 
+#pragma region groupbox
 void c::groupbox(const char* title, ImVec2 size)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -153,7 +160,9 @@ void c::endgroupbox()
 {
     ImGui::EndChild();
 }
+#pragma endregion
 
+#pragma region iconbuttons
 bool c::begintab(const char* unique_id, Icons icon, ImFont* font)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -200,8 +209,11 @@ bool c::begintab(const char* unique_id, Icons icon, ImFont* font)
 
     return currentTab->second;
 }
+#pragma endregion
 
+#pragma region slider
 bool c::slider(const char* label, int* v, int v_min, int v_max)
 {
 
 }
+#pragma endregion

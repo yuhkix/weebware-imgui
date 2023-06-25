@@ -29,7 +29,7 @@ void menu::rendermenu()
         #pragma region Logo
         ImGui::SetCursorPos(ImVec2(15, 5));
         ImGui::PushFont(util::LogoIconFont);
-        ImGui::TextColored(ImColor(203.f / 255.f, 119.f / 255.f, 180.f / 255.f), "A");
+        ImGui::TextColored(ImColor(203, 119, 180), "A");
         ImGui::PopFont();
         #pragma endregion
 
